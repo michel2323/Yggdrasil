@@ -3,12 +3,12 @@
 using BinaryBuilder, Pkg
 
 name = "NEO"
-version = v"22.35.24055"
+version = v"22.43.24558"
 
 # Collection of sources required to build this package
 sources = [
     GitSource("https://github.com/intel/compute-runtime.git",
-              "315f6230bf323c6cf554f08b14920f40a5f27fb2"),
+              "3fced927668680235c9866230fd6067e692cf989"),
 ]
 
 # Bash recipe for building across all platforms
@@ -48,6 +48,9 @@ CMAKE_FLAGS+=(-DDISABLE_LIBVA:Bool=true)
 # enable support for the DG1
 CMAKE_FLAGS+=(-DSUPPORT_DG1:Bool=true)
 
+# enable support for the DG2
+CMAKE_FLAGS+=(-DSUPPORT_DG2:Bool=true)
+
 # libigc installs libraries and pkgconfig rules in lib64, so look for them there.
 # FIXME: shouldn't BinaryBuilder do this?
 export PKG_CONFIG_PATH=${prefix}/lib64/pkgconfig:${prefix}/lib/pkgconfig
@@ -73,10 +76,13 @@ products = [
 ]
 
 # Dependencies that must be installed before this package can be built
+gmmlib = Pkg.PackageSpec(name="gmmlib_jll"; path="/home/michel/.julia/dev/gmmlib_jll")
+libigc = Pkg.PackageSpec(name="libigc_jll"; path="/home/michel/.julia/dev/libigc_jll")
+headers = Pkg.PackageSpec(name="oneAPI_Level_Zero_Headers_jll"; path="/home/michel/.julia/dev/oneAPI_Level_Zero_Headers_jll")
 dependencies = [
-    Dependency("gmmlib_jll"; compat="=22.1.3"),
-    Dependency("libigc_jll"; compat="=1.0.11702"),
-    Dependency("oneAPI_Level_Zero_Headers_jll", v"1.4.8"; compat="1.3.7"),
+    Dependency(gmmlib; compat="=22.3.0"),
+    Dependency(libigc; compat="=1.0.12260"),
+    Dependency(headers, v"1.8.8"; compat="1.3.7"),
 ]
 
 # GCC 4 has constexpr incompatibilities
